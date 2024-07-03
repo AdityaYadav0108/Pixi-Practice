@@ -1,5 +1,6 @@
 let app;
 let player;
+
 window.onload = async function () {
   app = new PIXI.Application({
     width: 800,
@@ -10,10 +11,13 @@ window.onload = async function () {
   document.body.appendChild(app.view);
 
   //Loading a singular Asset
-  player = await assetCreator("../images/player.png");
-  console.log(player);
+  let playerTexture = await PIXI.Assets.load("../images/player.png");
+  player = new PIXI.Sprite(playerTexture);
+  player.anchor.set(0.5);
+  player.x = app.screen.width/2;
+  player.y = app.screen.height/2;
   app.stage.addChild(player);
-
+  console.log(player);
 
   //Loading multiple assets in the form of a bundle
   PIXI.Assets.addBundle("bloats", {
@@ -28,20 +32,24 @@ window.onload = async function () {
     bloat09: "../images/bloat09.png",
     bloat10: "../images/bloat10.png",
   });
-  
+
   //loading the assets
   const assets = await PIXI.Assets.loadBundle("bloats");
   console.log(assets);
 
   //converting the texture assets to sprites
-
-  
-
-
-
+  addBloats(assets);
 };
 
-async function assetCreator(path) {
-  let texture = await PIXI.Assets.load(path);
-  return new PIXI.Sprite(texture);
+function addBloats(assets){
+  for (asset in assets) {
+    let sprite = new PIXI.Sprite(assets[asset]);
+    app.stage.addChild(sprite);
+  }
+
 }
+
+// async function assetCreator(path) {
+//   let texture = await PIXI.Assets.load(path);
+//   return new PIXI.Sprite(texture);
+// }
