@@ -52,7 +52,7 @@ function updateBullet(delta) {
       bullets.splice(bullets.indexOf(bullet), 1);
     }
     bullet.position.x += bullet.speed;
-    if (bullet.x === app.view.width) {
+    if(bullet.x === app.view.width){
       bullet.dead = true;
     }
   }
@@ -61,3 +61,4 @@ function updateBullet(delta) {
 function gameLoop1(delta) {
   updateBullet(delta);
 }
+

@@ -46,7 +46,6 @@ function addBloats(assets){
     let sprite = new PIXI.Sprite(assets[asset]);
     app.stage.addChild(sprite);
   }
-
 }
 
 // async function assetCreator(path) {
