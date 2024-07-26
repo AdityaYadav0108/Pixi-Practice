@@ -1,0 +1,39 @@
+{"frames": {
+
+"tile000.png":
+{
+	"frame": {"x":1,"y":1,"w":39,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":46},
+	"sourceSize": {"w":39,"h":46}
+},
+"tile001.png":
+{
+	"frame": {"x":42,"y":1,"w":39,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":46},
+	"sourceSize": {"w":39,"h":46}
+},
+"tile002.png":
+{
+	"frame": {"x":83,"y":1,"w":39,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":46},
+	"sourceSize": {"w":39,"h":46}
+}},
+"animations": {
+	"tile": ["tile000.png","tile001.png","tile002.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "player_back.png",
+	"format": "RGBA8888",
+	"size": {"w":123,"h":48},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:778198cf0b19e5783bd7554ca327a5aa:b4e2e10038f5d829dae454ebe2571587:855a1861274ce53d648e5b74ac516f29$"
+}
+}
