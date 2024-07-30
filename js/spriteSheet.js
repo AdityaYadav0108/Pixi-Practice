@@ -1,7 +1,6 @@
 let app;
-let playerSheet = {};
 
-window.onload = async () => {
+(async () => {
   app = new PIXI.Application({
     resizeTo: window,
     background: "#1099bb",
@@ -9,20 +8,23 @@ window.onload = async () => {
 
   document.body.appendChild(app.view);
 
-  PIXI.Assets.addBundle("playerSprites", {
-    playerRight: "../images/player/Actor1_right.png",
-    playerLeft: "../images/player/Actor1_left.png",
-    playerFront: "../images/player/Actor1_front.png",
-    playerBack: "../images/player/Actor1_back.png",
+  const sheetTexture = await PIXI.Assets.load(
+    "../images/player/player_back/player_back.png"
+  );
+  PIXI.Assets.add({
+    alias: "player_back",
+    src: "../images/player/player_back/player_back.json",
+    data: { texture: sheetTexture }, // using of preloaded texture
   });
+  const sheet = await PIXI.Assets.load("player_back");
 
-  await PIXI.Assets.loadBundle("playerSprites")
-  .then(() => doneLoading());
-};
-
-function doneLoading() {
-  let rightSheet = new PIXI.BaseTexture.from("../images/player/Actor1_right.png");
-  let leftSheet = new PIXI.BaseTexture.from("../images/player/Actor1_left.png");
-  let frontSheet = new PIXI.BaseTexture.from("../images/player/Actor1_front.png");
-  let backSheet = new PIXI.BaseTexture.from("../images/player/Actor1_back.png");
-}
+  const animatedSprite = new PIXI.AnimatedSprite(
+    sheet.animations["player_back"]
+  );
+  animatedSprite.x = app.screen.width / 2;
+  animatedSprite.y = app.screen.height / 2;
+  animatedSprite.anchor.set(0.5);
+  animatedSprite.play();
+  animatedSprite.animationSpeed = 0.1;
+  app.stage.addChild(animatedSprite);
+})();
