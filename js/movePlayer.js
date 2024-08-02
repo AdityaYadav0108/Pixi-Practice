@@ -1,76 +1,63 @@
-let app = new PIXI.Application({
-  resizeTo: window,
-  background: "#1099bb",
-});
-
-document.body.appendChild(app.view);
-let directions = ["left", "right", "back", "front"];
-let animatedSprites = {};
+const pathTemplate = "../images/player/";
+let animatedSprites = [];
+let app;
 let keysPressed = {};
-let sprite;
+let currentSprite;
+let currentPosi = {};
 
-(async () => {
-  const backSheetTexture = await PIXI.Assets.load("../images/player/back.png");
-  PIXI.Assets.add({
-    alias: "backAsset",
-    src: "../images/player/back.json",
-    data: { texture: backSheetTexture },
+
+window.onload = async () => {
+  app = new PIXI.Application({
+    resizeTo: window,
+    background: "#1099bb",
   });
-  const backSheet = await PIXI.Assets.load("backAsset");
-  const backAnimatedSprite = new PIXI.AnimatedSprite(
-    backSheet.animations["go-back"]
-  );
-  animatedSprites.back = backAnimatedSprite;
 
-  const frontSheetTexture = await PIXI.Assets.load(
-    "../images/player/front.png"
-  );
-  PIXI.Assets.add({
-    alias: "frontAsset",
-    src: "../images/player/front.json",
-    data: { texture: frontSheetTexture },
-  });
-  const frontSheet = await PIXI.Assets.load("frontAsset");
-  const frontAnimatedSprite = new PIXI.AnimatedSprite(
-    frontSheet.animations["go-front"]
-  );
-  animatedSprites.front = frontAnimatedSprite;
+  document.body.appendChild(app.view);
 
-  const leftSheetTexture = await PIXI.Assets.load("../images/player/left.png");
-  PIXI.Assets.add({
-    alias: "leftAsset",
-    src: "../images/player/left.json",
-    data: { texture: leftSheetTexture },
-  });
-  const leftSheet = await PIXI.Assets.load("leftAsset");
-  const leftAnimatedSprite = new PIXI.AnimatedSprite(
-    leftSheet.animations["go-left"]
-  );
-  animatedSprites.left = leftAnimatedSprite;
+  currentPosi.x = app.screen.width/2;
+  currentPosi.y = app.screen.height/2;
 
-  const rightSheetTexture = await PIXI.Assets.load(
-    "../images/player/right.png"
+  const leftAnimatedSprite = await createAnimatedSprite(
+    `${pathTemplate}left.png`,
+    `${pathTemplate}left.json`,
+    "left"
   );
-  PIXI.Assets.add({
-    alias: "rightAsset",
-    src: "../images/player/right.json",
-    data: { texture: rightSheetTexture },
-  });
-  const rightSheet = await PIXI.Assets.load("rightAsset");
-  const rightAnimatedSprite = new PIXI.AnimatedSprite(
-    rightSheet.animations["go-right"]
+
+  animatedSprites.push(leftAnimatedSprite);
+
+  const rightAnimatedSprite = await createAnimatedSprite(
+    `${pathTemplate}right.png`,
+    `${pathTemplate}right.json`,
+    "right"
   );
-  animatedSprites.right = rightAnimatedSprite;
-})();
 
-app.ticker.add(gameloop);
-app.ticker.start;
-document.addEventListener("keydown", keyPressed);
-document.addEventListener("keyup", keyReleased);
+  animatedSprites.push(rightAnimatedSprite);
 
-function gameloop() {
-  movePlayer();
-}
+  const frontAnimatedSprite = await createAnimatedSprite(
+    `${pathTemplate}front.png`,
+    `${pathTemplate}front.json`,
+    "front"
+  );
+
+  animatedSprites.push(frontAnimatedSprite);
+
+  const backAnimatedSprite = await createAnimatedSprite(
+    `${pathTemplate}back.png`,
+    `${pathTemplate}back.json`,
+    "back"
+  );
+
+  animatedSprites.push(backAnimatedSprite);
+  currentSprite = animatedSprites[2];
+  currentSprite.x = currentPosi.x;
+  currentSprite.y = currentPosi.y;
+  app.stage.addChild(currentSprite);
+
+  window.addEventListener("keydown", keyPressed);
+  window.addEventListener("keyup", keyReleased);
+
+  app.ticker.add(gameloop);
+};
 
 function keyPressed(e) {
   keysPressed[e.key] = true;
@@ -78,15 +65,56 @@ function keyPressed(e) {
 function keyReleased(e) {
   keysPressed[e.key] = false;
 }
-function movePlayer() {
+
+function gameloop(){
+  let flag = true;
   if (keysPressed["w"]) {
-    sprite = animatedSprites["back"];
-    sprite.play();
-  }
-  if (keysPressed["a"]) {
+    flag = false;
+    currentSprite = animatedSprites[3];
+    currentPosi.y -= 2;
   }
   if (keysPressed["s"]) {
+    flag = false;
+    currentSprite = animatedSprites[2];
+    currentPosi.y +=2;
+  }
+  if (keysPressed["a"]) {
+    flag = false;
+    currentSprite = animatedSprites[0];
+    currentPosi.x -= 2;
   }
   if (keysPressed["d"]) {
+    flag = false;
+    currentSprite = animatedSprites[1];
+    currentPosi.x += 2;
   }
+  if(flag){
+    currentSprite.stop()
+    return;
+  }
+  app.stage.removeChildren();
+  currentSprite.x = currentPosi.x;
+  currentSprite.y = currentPosi.y;
+  currentSprite.play();
+  app.stage.addChild(currentSprite);
+}
+
+async function createAnimatedSprite(imgPath, jsonPath, orientation) {
+  const sheetTexture = await PIXI.Assets.load(imgPath);
+  PIXI.Assets.add({
+    alias: `${orientation}Asset`,
+    src: jsonPath,
+    data: {
+      texture: sheetTexture,
+    },
+  });
+
+  const sheet = await PIXI.Assets.load(`${orientation}Asset`);
+  const animatedSprite = new PIXI.AnimatedSprite(
+    sheet.animations[`go-${orientation}`]
+  );
+  
+  animatedSprite.anchor.set(0.5);
+  animatedSprite.animationSpeed = 0.1
+  return animatedSprite;
 }
